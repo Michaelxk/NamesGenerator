@@ -1,61 +1,49 @@
+
 document.querySelector('#generar-nombre').addEventListener('submit', cargarNombres);
 
-// Llamado ajax e imprimir resultados 
+// Llamado a Ajax e imprimir resultados
 function cargarNombres(e) {
-   e.preventDefault()
+     e.preventDefault();
 
-   // Leer las variables 
+     // Leer las variables
 
-   const origen = document.getElementById('origen');
-   const origenSeleccionado = origen.options[origen.selectedIndex].value;
+     const origen = document.getElementById('origen');
+     const origenSeleccionado = origen.options[origen.selectedIndex].value;
 
-   const genero = document.getElementById('genero');
-   const generoSeleccionado = genero.options[genero.selectedIndex].value;
+     const genero = document.getElementById('genero');
+     const generoSeleccionado = genero.options[genero.selectedIndex].value;
 
-   const cantidad = document.getElementById('numero').value;
+     const cantidad = document.getElementById('numero').value;
 
-   console.log(cantidad)
 
-   let url = '';
-   url += 'http://uinames.com/api/?';
-   // Si ahi origen agregarlo a la URL 
-   if(origenSeleccionado !== '') {
-       url += `region=${origenSeleccionado}&`;
-   }
-    // Si ahi genero agregarlo a la URL 
-    if(generoSeleccionado !== '') {
-        url += `gender=${generoSeleccionado}&`;
-    }
-    // Si ahi cantidad agregarlo a la URL 
-    if(cantidad !== '') {
-       url += `amount=${cantidad}&`;
-    }
-    // Conectar con ajax
-    // Iniciar XMLHttpRequest
-    const xhr = new XMLHttpRequest();
-    // Abrimos la conection
-    xhr.open('GET', url, true);
-    // Datos de impresion del template
-    xhr.onload = function() {
-       if(this.status === 200) {
-          const nombres = JSON.parse( this.responseText );
-          // Generar el HTML 
-          let htmlNombres = `<h2>Nombres Generados<h2>`;
+     let url = '';
+     url += 'http://uinames.com/api/?';
+     // Si hay origen agregarlo a la URL
+     if(origenSeleccionado !== '') {
+          url += `region=${origenSeleccionado}&`;
+     }
+     // Si hay un genero agregarlo a la URL
+     if(generoSeleccionado !== '') {
+          url += `gender=${generoSeleccionado}&`;
+     }
+     // Si hay una cantidad agregarlo a la URL
+     if(cantidad !== '') {
+          url += `amount=${cantidad}&`;
+     }
 
-          htmlNombres += `<ul class="lista">`;
-          
-          // Imprimir cada nombre
-           nombres.forEach(nombre => {
-              htmlNombres += `
-                    <li>${nombre.name}
-              `;
-              document.getElementById('resultado').innerHTML = htmlNombres;
-          });
-
-          htmlNombres += `</ul>`;
-       
-        }
-    }
-    // Enviar el Request
-    xhr.send(); 
+     // crear Fetch
+     fetch(url)
+        .then( res => res.json() )
+        .then(data => {
+            let html = `<h2>Nombres Generados</h2>`;
+            html += `<ul class="lista">`;
+            data.forEach(nombre => { 
+                html += `
+                    <li>${nombre.name}</li>
+                `;
+            })
+            html += `</ul>`;
+            document.querySelector('#resultado').innerHTML = html;
+        })
+        .catch(error =>  console.log(error) )
 }
